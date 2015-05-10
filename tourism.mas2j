@@ -1,0 +1,16 @@
+MAS tourism {
+
+	 infrastructure: Centralised
+
+    agents:
+        simulator;
+
+        blackboard;
+
+        broker;
+		
+		sample;
+		
+	aslSourcePath:
+		"src/asl";
+}
