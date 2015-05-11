@@ -4,8 +4,8 @@
 
 gasto(0).
 
-// Regla na•ve para comparar dos rutas ordenadas por precio. 
-// Fijaros que se tiene acceso directo a la informaci—n de las rutas y no es
+// Regla naï¿½ve para comparar dos rutas ordenadas por precio. 
+// Fijaros que se tiene acceso directo a la informaciï¿½n de las rutas y no es
 // necesario preguntar al Blackboard
 
 compatibles(R1,R2) :- 
@@ -22,7 +22,7 @@ compatibles(R1,R2) :-
 	//.print("Son Compatibles: ", R1," y ",R2, "con tiempos: ", Tfin1, " y ", Tini2)
 	.
 
-// Regla na•ve para devolver una lista de rutas compatibles ordenadas por precio
+// Regla naï¿½ve para devolver una lista de rutas compatibles ordenadas por precio
 
 let_compatibles([],[]) :- 
 	.print("Fin; lista vacia.").
@@ -54,7 +54,7 @@ let_compatibles([R1,R2|L],[R1|NL]) :-
 /* Plans */
 
 +init_pago[source(A)] : true <-
-	.print("Efectua la actualizaci—n de dinero con el pago de las entradas.");
+	.print("Efectua la actualizaciï¿½n de dinero con el pago de las entradas.");
 	?money(M);
 	//?ingresos(I);
 	?gasto(G);
@@ -92,19 +92,34 @@ let_compatibles([R1,R2|L],[R1|NL]) :-
 
 +name[source(A)] : true <-
 	.my_name(Name);	
-	.wait(type(T));
+	.wait(type(T),200);
 	?type(T);
-	.wait(num(NViajeros));
+	.wait(num(N),200);
 	?num(NViajeros);
 	.send(A,tell,name(Name,T,NViajeros));
-	-name[source(A)].
+	//.print("Envio respuesta a ", A);
+	-name[source(A)]
+	.
+	
++!type(T) : type(T).
+
++!num(N) : num(N).
 	
 +!start : true <- 
 	.my_name(Name);
 	.print("Hola soy el agente: ", Name);
 	!create;
 	!get_Routes;
-	!take_Routes.
+	!take_Routes;
+	!cancel_first.
+	
+	
++!cancel_first : confirm(ok(Id)) & num(N) <-
+	.send(blackboard,tell,cancel_reserve(Id,N));
+	.print("He eliminado la reserva de la ruta: ", Id).
+	
+-!cancel_first : true <-
+	.print("No tengo ninguna reserva.").
 	
 +!take_Routes : true <-
 	!select_Routes;
@@ -198,10 +213,10 @@ let_compatibles([R1,R2|L],[R1|NL]) :-
 	};
 	//.print(R)
 	-reserva(Id);
-	.print("Elimino reserva de la ruta: ", Id);
+	.print("Elimino mi hecho de reserva pendiente de la ruta: ", Id);
 	!reserve_Routes.
 
-+!reserve_Routes : true <- .print("No hay mas reservas que hacer.").
++!reserve_Routes : true <- .print("No hay mas reservas posibles.").
 	
 +!select_Routes : true <-
 	.wait(500);
